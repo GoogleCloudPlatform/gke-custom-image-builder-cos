@@ -2,20 +2,20 @@
 
 This repository provides a template for building custom Container-Optimized OS (COS) images for GKE using Google Cloud Build and the COS Customizer tool.
 
-**This is not an officially supported Google product.** This project is not eligible for the Google Open Source Software Vulnerability Rewards Program.
+**Disclaimer: This is not an officially supported Google product.** This project is not eligible for the Google Open Source Software Vulnerability Rewards Program.
 
 ## Overview
 
 By using this template, you can:
 
 *   **Automate Image Builds:** Trigger new image builds automatically based on code changes.
-*   **Ensure Consistency:** Define your image customizations declaratively.
-*   **Integrate with Git:** Manage your customization scripts and configurations in Git.
+*   **Ensure Consistency:** Define your image customizations declaratively for consistent and repeatable builds.
+*   **Integrate with Git:** Manage your customization scripts and configurations in a Git repository, providing versioning and a clear audit trail.
 
 This template uses:
-*   **Google Cloud Build:** To execute the customization steps.
-*   **`cos-customizer`:** The Google-provided tool for modifying COS images.
-*   **Terraform:** To set up the Cloud Build trigger and associated service account.
+*   **Google Cloud Build:** A service that executes your builds on Google Cloud Platform's infrastructure.
+*   **`cos-customizer`:** The Google-provided tool specifically for modifying Container-Optimized OS images.
+*   **Terraform:** An infrastructure-as-code tool to set up the Cloud Build trigger and associated service account.
 
 ## Prerequisites
 
@@ -25,42 +25,68 @@ This template uses:
 
 ## How to Use This Template
 
-1.  **Create Your Repository:** Click the "Use this template" button on the GitHub UI to create a new repository under your own account/organization.
-2.  **Clone Your Repository:** Clone your newly created repository to your local machine.
-    ```bash
-    git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-    cd YOUR_REPOSITORY_NAME
+1.  **Create Your Repository from this Template**
+
+    *   Go to this repository on GitHub (if it's a template repository, use the "Use this template" button):
+        *   `https://github.com/GoogleCloudPlatform/your-repo-name` (Replace `your-repo-name` with the actual repository name once it's public).
+    *   Clone your newly created repository to your local machine:
+        ```bash
+        git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+        cd YOUR_REPOSITORY_NAME
+        ```
+
+2.  **Connect Your GitHub Repository to Google Cloud Build**
+
+    *   **This is a crucial manual step.** Before running Terraform, you must authorize Cloud Build to access your new repository.
+    *   Navigate to the Cloud Build Repositories page in the Google Cloud Console, or use this direct link (replace `<PROJECT_NUMBER>` with your Google Cloud Project Number, not ID):
+        *   `https://console.cloud.google.com/cloud-build/triggers;region=global/connect?project=<PROJECT_NUMBER>`
+    *   Click **"Link repository"** and follow the on-screen instructions to connect your new GitHub repository to your Google Cloud project.
+
+3.  **Configure Your Environment**
+
+    *   In your local repository directory, create a `terraform.tfvars` file with the following content, **replacing the placeholder values** with your own details:
+
+    ```terraform
+    project_id       = "your-gcp-project-id"
+    github_owner     = "your-github-username-or-org"
+    github_repo_name = "your-github-repo-name"
+    # Optional: Customize the trigger name (must be unique)
+    trigger_name     = "gke-cos-customizer-trigger"
     ```
-3.  **Configure `main.tf`:** Modify the `variable` blocks in `main.tf` to match your environment, including:
-    *   `project_id`: Your Google Cloud project ID.
-    *   `github_owner`: Your GitHub username or organization.
-    *   `github_repo_name`: The name of the repository you created.
-4.  **Customize the Build:**
-    *   Edit `cloudbuild.yaml` to adjust build steps and `substitutions`.
-    *   **Select Base Image:** Update the `_GOLDEN_BASE_IMAGE` substitution in `cloudbuild.yaml` with an appropriate COS base image. See [TODO update once available How to Choose a Base Image] in the GKE Custom Image User Guide.
-    *   Add or modify shell scripts in the `scripts/cos/` directory to apply your desired customizations (e.g., installing packages, modifying kernel settings). See the examples provided.
+
+4.  **Customize the Build**
+
+    *   **Select Base Image:** Update the `source_image` variable in your `terraform.tfvars` or `variables.tf` file with an appropriate GKE golden COS base image. Refer to the official GKE Custom Image User Guide (TODO: update this when the link is available) for details on how to choose a base image.
+    *   **Modify Customization Scripts:** Add or modify shell scripts in the `scripts/cos/` directory to apply your desired customizations (e.g., installing packages, modifying kernel settings). See the `setup.sh` example provided. If you add new scripts, you will also need to update `cloudbuild.yaml` to include them as new `run-script` steps.
     *   Reference the [COS Customizer Documentation](https://cos.googlesource.com/cos/tools/+/refs/heads/master/src/cmd/cos_customizer/) for more details on available commands.
-5.  **Connect to Cloud Build:** In the Google Cloud Console, go to Cloud Build > Repositories, click "Link repository," and connect your GitHub repository.
-6.  **Deploy the Trigger:** Run Terraform to create the Cloud Build trigger and associated resources:
+
+5.  **Initialize and Deploy Terraform**
+
+    *   Now that the repository connection exists and your environment is configured, run Terraform to create the Cloud Build trigger and associated resources:
+
     ```bash
     terraform init
     terraform apply
     ```
-7.  **Run a Build:** Navigate to Cloud Build > Triggers, find the `cos-customizer-manual-trigger`, and click "RUN" to create your custom image.
+
+6.  **Run a Build**
+
+    *   Push a commit to the `main` branch of your repository to trigger a build, or navigate to Cloud Build > Triggers, find the trigger named `gke-cos-customizer-trigger` (or your custom `trigger_name`), and click "RUN" to create your custom image.
+
+7.  **Use Your Custom Image**
+
+    *   Once the build is complete, you can use your custom image to create a new GKE node pool. The image will be named according to the `target_image_name` and `target_image_family` variables you configured.
 
 ## Best Practices
 
 *   **Base Images:** Always start from an official GKE golden COS image appropriate for your target GKE version.
-*   **Idempotency:** Ensure your customization scripts are idempotent.
-*   **Testing:** Thoroughly test your custom images in a non-production environment.
+*   **Idempotency:** Ensure your customization scripts are idempotent (running them multiple times produces the same result).
+*   **Testing:** Thoroughly test your custom images in a non-production environment before deploying to production.
 *   **Loadpin:** Be mindful of COS's LoadPin feature, which restricts kernel module loading. Customizations requiring new kernel modules must ensure they are placed in a trusted location, or LoadPin settings must be carefully adjusted.
-*   **Vulnerability Scanning:** Integrate image scanning tools into your pipeline.
+*   **Vulnerability Scanning:** Integrate image scanning tools into your pipeline to check for known vulnerabilities.
 
 ## Resources
 
 *   [TODO: update this when the link is available GKE Custom Image User Guide]
 *   [COS Customizer Documentation](https://cos.googlesource.com/cos/tools/+/refs/heads/master/src/cmd/cos_customizer/)
 *   [Google Cloud Build Documentation](https://cloud.google.com/build/docs)
-
-
-

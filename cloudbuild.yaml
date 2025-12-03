@@ -1,0 +1,53 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This Cloud Build pipeline uses the cos-customizer tool to build a custom GKE COS image.
+
+options:
+  # Send build logs to Cloud Logging.
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+# Step 1: Initialize the image build process.
+# This step starts a temporary builder VM and prepares the environment for customization.
+- name: 'gcr.io/cos-cloud/cos-customizer'
+  args: ['start-image-build',
+         '-image-name=${_GOLDEN_BASE_IMAGE}',
+         '-image-project=${_GOLDEN_BASE_IMAGE_PROJECT}',
+         '-gcs-bucket=${PROJECT_ID}_cloudbuild',
+         '-gcs-workdir=cos-customizer-$BUILD_ID',
+         '-build-context=.']
+
+# Step 2: Run the customization script.
+# This executes the 'setup.sh' script on the builder VM to apply desired modifications.
+# You can update the scripts in `scripts/cos/` to perform your specific customizations
+# (e.g., installing packages, modifying kernel parameters, etc.).
+- name: 'gcr.io/cos-cloud/cos-customizer'
+  args: ['run-script',
+         '-script=scripts/cos/setup.sh']
+
+# Step 3: Finalize the image build.
+# This step stops the builder VM, creates the final custom COS image from its disk,
+# and applies the specified name, family, and labels.
+- name: 'gcr.io/cos-cloud/cos-customizer'
+  args: ['finish-image-build',
+         '-zone=${_ZONE}',
+         '-project=$PROJECT_ID',
+         '-image-name=${_TARGET_IMAGE_NAME}-${BUILD_ID}',
+         '-image-family=${_TARGET_IMAGE_FAMILY}',
+         '-image-project=$PROJECT_ID',
+         '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${BUILD_ID}']
+
+# Set a timeout for the entire build process.
+timeout: '1800s'
