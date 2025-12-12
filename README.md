@@ -61,6 +61,9 @@ This template uses:
     project_id       = "your-gcp-project-id"
     github_owner     = "your-github-username-or-org"
     github_repo_name = "your-github-repo-name"
+
+    # Note: The target_image_name must include the substring "cos".
+    target_image_name = "my-gke-custom-cos-image"
     ```
 
 5.  **Customize the Build**

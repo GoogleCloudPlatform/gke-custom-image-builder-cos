@@ -15,6 +15,7 @@ source_image = "gke-1341-gke1829001-cos-125-19216-0-94-c-nvda" # !!! REPLACE THI
 # zone   = "us-central1-c"
 
 # --- Image Settings ---
+# Note: The target_image_name must include the substring "cos".
 source_image_project = "gke-node-images"
 # target_image_name = "my-gke-custom-cos"
 # target_image_family = "my-gke-custom-cos-family"
