@@ -56,7 +56,7 @@ variable "zone" {
 variable "source_image" {
   description = "The source GKE COS image to customize. [TODO update this once available. link for details on how to select a suitable image."
   type        = string
-  default     = "gke-1334-gke1182000-cos-121-18867-199-43-c-pre"
+  default     = "gke-1341-gke1829001-cos-125-19216-0-94-c-nvda"
 }
 
 variable "source_image_project" {

@@ -16,12 +16,18 @@
 
 # This Terraform configuration sets up a Cloud Build trigger to create custom GKE COS images.
 
-# Create a GCS bucket to be used as a scratchpad by the cos-customizer tool.
-resource "google_storage_bucket" "imagebuild_bucket" {
-  project      = var.project_id
-  name         = "${var.project_id}_cloudbuild"
-  location     = "US"
+# Create a random suffix to ensure the bucket name is unique
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
+
+# Create a GCS bucket to store build scripts and artifacts
+resource "google_storage_bucket" "cos_imagebuild_bucket" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-cos-imagebuild-${random_id.bucket_suffix.hex}"
+  location                    = "US"
   uniform_bucket_level_access = true
+  force_destroy               = false
 }
 
 # Create a dedicated service account for the Cloud Build trigger
@@ -63,7 +69,8 @@ resource "google_cloudbuild_trigger" "cos_customizer_trigger" {
   }
 
   substitutions = {
-    _GOLDEN_BASE_IMAGE        = var.source_image
+    _GCS_BUCKET                = google_storage_bucket.cos_imagebuild_bucket.name
+    _GOLDEN_BASE_IMAGE         = var.source_image
     _GOLDEN_BASE_IMAGE_PROJECT = var.source_image_project
     _TARGET_IMAGE_NAME        = var.target_image_name
     _TARGET_IMAGE_FAMILY      = var.target_image_family
