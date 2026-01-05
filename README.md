@@ -19,6 +19,7 @@ This template uses:
 
 ## Prerequisites
 
+*   Obtain the “GKE Custom Image Builder Toolkit” user guide from your Google Cloud Technical Account Manager.
 *   An active Google Cloud project with billing and the Cloud Build API enabled.
 *   A GitHub account.
 *   Google Cloud SDK (`gcloud`) and Terraform installed locally.
