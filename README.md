@@ -38,11 +38,12 @@ This template uses:
     **Important:** You must authorize Cloud Build to access your new repository before running Terraform.
 
     *   **This is a crucial manual step.** Before running Terraform, you must authorize Cloud Build to access your new repository.
-    *   Navigate to the Cloud Build Repositories page in the Google Cloud Console, or use this direct link (replace `<PROJECT_NUMBER>` with your Google Cloud Project Number, not ID):
-        *   `https://console.cloud.google.com/cloud-build/triggers;region=global/connect?project=<PROJECT_NUMBER>`
-    *   Click **"Link repository"** and follow the on-screen instructions to connect your new GitHub repository to your Google Cloud project.
-    *   Once the repository is linked, do not create a trigger in the console.
-        *   The console may prompt you to create a trigger immediately after linking. Skip this step.
+    *   Go to `https://console.cloud.google.com/cloud-build/triggers;region=global/connect?project=<PROJECT_ID_OR_NUMBER>`
+        *   Follow the on-screen instructions to connect your new GitHub respository. Skip the optional "Create a trigger" step.
+        *   Alernatively, navigate to the Cloud Build **Triggers** page in the Google Cloud Console and click **Connect repository**.
+        *   Note that this is using Cloud Build Respositories 1st gen.
+    *   Once the repository is connected, do not create a trigger in the console.
+        *   The console may prompt you to create a trigger immediately after connection. Skip this step.
         *   You only need to establish the connection; the Terraform script in Step 6 will automatically create the correct trigger for you.
 
 3.  **Clone Your Repository**
