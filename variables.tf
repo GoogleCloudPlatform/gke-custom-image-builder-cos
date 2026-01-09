@@ -86,11 +86,11 @@ variable "trigger_name" {
 variable "network" {
   description = "The VPC network to use for the build. If not specified, the 'default' network is used."
   type        = string
-  default     = "default"
+  default     = "global/networks/default"
 }
 
 variable "subnet" {
   description = "The subnet to use for the build. If not specified, the build uses the subnet in the same region as the build."
   type        = string
-  default     = ""
+  default     = "global/networks/default"
 }

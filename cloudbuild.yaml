@@ -31,9 +31,7 @@ steps:
          '-image-project=${_GOLDEN_BASE_IMAGE_PROJECT}',
          '-gcs-bucket=${_GCS_BUCKET}',
          '-gcs-workdir=cos-customizer-$BUILD_ID',
-         '-build-context=.',
-         '-network=${_NETWORK}',
-         '-subnet=${_SUBNET}']
+         '-build-context=.']
 
 # Step 2: Run the customization script.
 # This executes the 'setup.sh' script on the builder VM to apply desired modifications.
@@ -51,6 +49,8 @@ steps:
          '-zone=${_ZONE}',
          '-project=$PROJECT_ID',
          '-image-name=${_TARGET_IMAGE_NAME}-${_SHORT_BUILD_ID}',
+         '-network=${_NETWORK}',
+         '-subnet=${_SUBNET}',
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']
