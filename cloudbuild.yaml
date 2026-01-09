@@ -44,11 +44,14 @@ steps:
 # Step 3: Finalize the image build.
 # This step stops the builder VM, creates the final custom COS image from its disk,
 # and applies the specified name, family, and labels.
+# The network and subnet will use the 'default' VPC network if none is provided.
 - name: 'gcr.io/cos-cloud/cos-customizer'
   args: ['finish-image-build',
          '-zone=${_ZONE}',
          '-project=$PROJECT_ID',
          '-image-name=${_TARGET_IMAGE_NAME}-${_SHORT_BUILD_ID}',
+         '-network=',
+         '-subnet=',
          '-image-family=${_TARGET_IMAGE_FAMILY}',
          '-image-project=$PROJECT_ID',
          '-labels=gke-golden-image=${_GOLDEN_BASE_IMAGE},gke-custom-version=${SHORT_SHA},build-id=${BUILD_ID}']

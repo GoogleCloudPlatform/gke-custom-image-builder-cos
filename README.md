@@ -66,6 +66,10 @@ This template uses:
 
     # Note: The target_image_name must include the substring "cos".
     target_image_name = "my-gke-custom-cos-image"
+
+
+    # Optional: Specify a network and subnet for the *final image build step* in the *cloudbuild.yaml* file
+    # If not specified, the 'default' VPC network and an auto-selected subnet will be used.
     ```
 
 5.  **Customize the Build**
