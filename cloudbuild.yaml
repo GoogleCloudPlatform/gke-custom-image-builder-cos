@@ -21,8 +21,6 @@ options:
 
 substitutions:
   _SHORT_BUILD_ID: ${BUILD_ID:0:8}
-  # The network and subnet will use the 'default' VPC network if none is provided in Terraform.
-  # Users can specify custom network settings in terraform.tfvars if needed.
 
 steps:
 # Step 1: Initialize the image build process.
@@ -46,6 +44,7 @@ steps:
 # Step 3: Finalize the image build.
 # This step stops the builder VM, creates the final custom COS image from its disk,
 # and applies the specified name, family, and labels.
+# The network and subnet will use the 'default' VPC network if none is provided.
 - name: 'gcr.io/cos-cloud/cos-customizer'
   args: ['finish-image-build',
          '-zone=${_ZONE}',
