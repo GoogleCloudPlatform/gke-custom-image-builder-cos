@@ -75,5 +75,7 @@ resource "google_cloudbuild_trigger" "cos_customizer_trigger" {
     _TARGET_IMAGE_NAME        = var.target_image_name
     _TARGET_IMAGE_FAMILY      = var.target_image_family
     _ZONE                     = var.zone
+    _NETWORK                  = var.network
+    _SUBNETWORK               = var.subnetwork
   }
 }

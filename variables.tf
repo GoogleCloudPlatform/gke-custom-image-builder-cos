@@ -82,3 +82,15 @@ variable "trigger_name" {
   type        = string
   default     = "gke-cos-customizer-trigger"
 }
+
+variable "network" {
+  description = "The VPC network to use for the build. If not specified, the 'default' network is used."
+  type        = string
+  default     = "default"
+}
+
+variable "subnetwork" {
+  description = "The subnetwork to use for the build. If not specified, the build uses the subnetwork in the same region as the build."
+  type        = string
+  default     = ""
+}

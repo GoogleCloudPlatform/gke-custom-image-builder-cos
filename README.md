@@ -65,6 +65,10 @@ This template uses:
 
     # Note: The target_image_name must include the substring "cos".
     target_image_name = "my-gke-custom-cos-image"
+
+    # Optional: Specify a network and subnetwork for the build.
+    # network    = "your-custom-network"
+    # subnetwork = "your-custom-subnetwork"
     ```
 
 5.  **Customize the Build**
